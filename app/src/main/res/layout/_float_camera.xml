@@ -1,0 +1,91 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/root">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#DDDDDD"
+                android:text="Setting"
+                android:id="@+id/main_btn_setting" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="#FF8888"
+                android:text="X"
+                android:id="@+id/main_btn_close" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/main_fl_cameraViewWrapper">
+
+            <view
+                android:layout_width="240px"
+                android:layout_height="320px"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                class="com.jack.view.CameraView"
+                android:id="@+id/main_cv_cameraView" />
+
+            <!--<ImageView-->
+                <!--android:layout_width="240px"-->
+                <!--android:layout_height="320px"-->
+                <!--android:id="@+id/imageView"-->
+                <!--android:background="#ffffff"-->
+                <!--android:src="@null"/>-->
+
+
+            <!--<WebView-->
+                <!--android:layout_width="240dp"-->
+                <!--android:layout_height="320dp"-->
+                <!--android:id="@+id/webView" />-->
+
+            <SeekBar
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="5dp"
+                android:max="100"
+                android:alpha="0.4"
+                android:id="@+id/main_sb_cvVisibleSeek" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#99BBFF"
+                android:text="Snapshot"
+                android:id="@+id/main_btn_snapshot" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</RelativeLayout>
