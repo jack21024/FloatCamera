@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.Camera;
-import android.net.Uri;
-import android.os.Environment;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -254,7 +252,7 @@ public class FloatCameraService extends Service {
                     mCameraView.snapshot();
 
                 //notify media database to show newly
-                sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+//                sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
             }
         });
 

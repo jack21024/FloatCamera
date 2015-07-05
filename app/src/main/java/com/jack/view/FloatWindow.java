@@ -5,6 +5,7 @@ import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.jack.Debug;
@@ -12,7 +13,7 @@ import com.jack.Debug;
 /**
  * Created by jacktseng on 2015/6/19.
  */
-public class FloatWindow implements View.OnTouchListener {
+public class FloatWindow implements View.OnTouchListener, ViewTreeObserver.OnGlobalLayoutListener {
     public static final String TAG = FloatWindow.class.getSimpleName();
 
     public static final int WINDOWS_WIDTH_DEFAULT = 320;
@@ -36,6 +37,7 @@ public class FloatWindow implements View.OnTouchListener {
     private int mTouchStartY;
 
     private OnEventListener mEventListener;
+    private OnLayoutCompleteListener mOnLayoutCompleteListener;
 
     public FloatWindow(View layout) {
         mLayout = layout;
@@ -130,6 +132,10 @@ public class FloatWindow implements View.OnTouchListener {
         mEventListener = listener;
     }
 
+    public void setOnLayoutCompleteListener(OnLayoutCompleteListener listener) {
+        mOnLayoutCompleteListener = listener;
+    }
+
     public void setLayoutFormat(int pixelFormat) {
         mLayoutParams.format = pixelFormat;
     }
@@ -140,6 +146,11 @@ public class FloatWindow implements View.OnTouchListener {
         if(mLayoutParams == null) return;
 
         if(!mIsLayout) {
+            //jack@150704
+            ViewTreeObserver vto = mLayout.getViewTreeObserver();
+            if(vto != null)
+                vto.addOnGlobalLayoutListener(this);
+
             mWindowManager.addView(mLayout, mLayoutParams);
 
             /**
@@ -159,6 +170,8 @@ public class FloatWindow implements View.OnTouchListener {
             mWindowManager.updateViewLayout(mLayout, mLayoutParams);
 
         mIsLayout = true;
+
+        Debug.dumpLog(TAG, "display layout to screen");
     }
 
     public void dismiss() {
@@ -173,8 +186,6 @@ public class FloatWindow implements View.OnTouchListener {
     /**
      * implements for View.OnTouchListener
      */
-
-
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         Debug.dumpLog(TAG, "onTouch()->x=" + motionEvent.getX() + " y=" + motionEvent.getY()
@@ -206,7 +217,20 @@ public class FloatWindow implements View.OnTouchListener {
         return true;
     }
 
+    @Override
+    public void onGlobalLayout() {
+        ViewTreeObserver vto = mLayout.getViewTreeObserver();
+        if(vto != null)
+            vto.removeOnGlobalLayoutListener(this);
+        if(mOnLayoutCompleteListener != null)
+            mOnLayoutCompleteListener.onLayoutCompleted();
+    }
+
     public interface OnEventListener {
         public void onTouch(View v, MotionEvent motionEvent);
+    }
+
+    public interface OnLayoutCompleteListener {
+        public void onLayoutCompleted();
     }
 }

@@ -81,14 +81,43 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+    public void start() {
+        if(mCameraHelper == null) return;
+        if(mHolder == null) return;
+        if(mIsDisplaying) return;
+
+        mCameraHelper.setDisplayHolder(mHolder);
+
+        try {
+            mCameraHelper.start();
+            mIsDisplaying = true;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        if(mCameraHelper == null) return;
+        if(!mIsDisplaying) return;
+
+        try {
+            mCameraHelper.stop();
+            mIsDisplaying = false;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public void release() {
         if(mCameraHelper != null) {
-            try {
-                if(mIsDisplaying)
-                    mCameraHelper.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                if(mIsDisplaying)
+//                    mCameraHelper.stop();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            stop();
             mCameraHelper.release();
         }
         mHolder = null;
@@ -169,19 +198,51 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i2, int i3) {
+    public void surfaceChanged(final SurfaceHolder surfaceHolder, int i, int i2, int i3) {
         Debug.dumpLog(TAG, "surfaceChanged()");
 
         if(mCameraHelper == null) return;
 
-        try {
-            if(mCameraHelper.isDisplaying())
-                mCameraHelper.stop();
-            mCameraHelper.setDisplayHolder(surfaceHolder);
-            mCameraHelper.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        /**
+         * To avoid a crash of unexpected camera closing (maybe is camera start with the WebViewer
+         * be created to closed), we letting camera to start lately.
+         */
+//        new Thread(new Runnable() {
+//
+//            public void run() {
+//                try {
+//                    Thread.sleep(1000);
+//
+//                    if (mCameraHelper.isDisplaying())
+//                        mCameraHelper.stop();
+//                    mCameraHelper.setDisplayHolder(surfaceHolder);
+//                    mCameraHelper.start();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }).start();
+
+        Thread thread = new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+
+                    if (mCameraHelper.isDisplaying())
+                        stop();
+
+                    start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        thread.setPriority(Thread.MIN_PRIORITY);
+        thread.start();
+
     }
 
     @Override

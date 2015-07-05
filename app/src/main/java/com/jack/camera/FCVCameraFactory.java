@@ -22,6 +22,11 @@ public class FCVCameraFactory {
     public static CameraHelper getInstance() {
         CameraHelper rtn = null;
 
+        /**
+         * cause the camera class was be instead to camera2 on API 21 upper, so the cameraHelper
+         * interface is needed to resolve the version of camera & camera2, user do not to care
+         * what the version you must be used.
+         */
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //api 21
 
         }
