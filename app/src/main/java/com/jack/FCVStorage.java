@@ -1,7 +1,9 @@
 package com.jack;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jack.camera.CameraHelper;
 import com.jack.util.OnSnapshotListener;
@@ -18,18 +20,24 @@ public class FCVStorage extends StorageImpl implements OnSnapshotListener {
     public static final String STORAGE_PICTURE_FORMAT_JPEG  = "jpg";
     public static final String STORAGE_PICTURE_FORMAT_PNG   = "png";
 
+    private Context mContext;
+
 //    private Storage mStorage;
 
 //    public FCVStorage() {
 //        mStorage = new StorageImpl();
 //    }
 
+    public FCVStorage(Context ctx) {
+        mContext = ctx;
+    }
+
     private String getFileNameByTime() {
         return String.valueOf(System.currentTimeMillis());
     }
 
-    public void save(Bitmap.CompressFormat format, Bitmap bmp) {
-        if(bmp == null || bmp.isRecycled()) return;
+    public String save(Bitmap.CompressFormat format, Bitmap bmp) {
+        if(bmp == null || bmp.isRecycled()) return null;
         if(format == null)
             format = Bitmap.CompressFormat.JPEG;
 
@@ -41,17 +49,23 @@ public class FCVStorage extends StorageImpl implements OnSnapshotListener {
             path += STORAGE_PICTURE_FORMAT_PNG;
 
 //        if(!mStorage.saveBitmap(path, Bitmap.CompressFormat.JPEG, bmp))
-        if(!saveBitmap(path, Bitmap.CompressFormat.JPEG, bmp))
+        if(!saveBitmap(path, Bitmap.CompressFormat.JPEG, bmp)) {
             Log.e(TAG, "save picture failed(jpeg)");
-        else
+            return null;
+        }
+        else {
             Debug.dumpLog(TAG, "save picture success.");
-
+            return path;
+        }
     }
 
     @Override
     public void onSnapshot(int rawType, Bitmap bmp) {
-        if(rawType == CameraHelper.CAMERA_SNAPSHOT_TYPE_JPEG)
-            save(Bitmap.CompressFormat.JPEG, bmp);
+        if(rawType == CameraHelper.CAMERA_SNAPSHOT_TYPE_JPEG) {
+            String path = save(Bitmap.CompressFormat.JPEG, bmp);
+            if(path != null && !path.isEmpty() && mContext != null)
+                Toast.makeText(mContext, "save at \"" + path + "\" ", Toast.LENGTH_SHORT).show();
+        }
         if(bmp != null) {
             bmp.recycle();
             System.gc();

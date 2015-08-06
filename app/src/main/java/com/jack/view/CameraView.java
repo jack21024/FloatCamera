@@ -204,8 +204,8 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         if(mCameraHelper == null) return;
 
         /**
-         * To avoid a crash of unexpected camera closing (maybe is camera start with the WebViewer
-         * be created to closed), we letting camera to start lately.
+         * lets camera starting lately to avoid unexpected crashing (maybe this crash is
+         * creating WebViewer and starting camera at the same time)
          */
 //        new Thread(new Runnable() {
 //

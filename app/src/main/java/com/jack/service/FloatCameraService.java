@@ -104,7 +104,7 @@ public class FloatCameraService extends Service {
         /**
          * set snapshot listener for catch snapshot picture
          */
-        cameraView.getCameraController().setSnapshotListener(new FCVStorage());
+        cameraView.getCameraController().setSnapshotListener(new FCVStorage(this));
 
         /**
          * mask of WebView which is used to hide camera preview
@@ -246,7 +246,7 @@ public class FloatCameraService extends Service {
         rootView.findViewById(R.id.main_btn_snapshot).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(FloatCameraService.this, "Snapshot", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(FloatCameraService.this, "Snapshot", Toast.LENGTH_SHORT).show();
 
                 if(mCameraView != null)
                     mCameraView.snapshot();

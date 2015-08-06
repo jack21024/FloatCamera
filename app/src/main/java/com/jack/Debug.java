@@ -12,7 +12,11 @@ public class Debug {
     public static void dumpLog(String tag, String msg) {
         if(IS_DEBUG)
             Log.d(tag, msg);
-  }
+    }
 
+    /**
+     * jack@150716
+     * 1. Added snapshot toast to show storage location
+     */
 
 }

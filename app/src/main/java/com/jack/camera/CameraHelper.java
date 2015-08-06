@@ -19,7 +19,6 @@ public interface CameraHelper {
     public static final int CAMERA_SNAPSHOT_TYPE_POST   = 0x11;
     public static final int CAMERA_SNAPSHOT_TYPE_JPEG   = 0x21;
 
-
     public boolean isDisplaying();
 
     public boolean checkPreviewSize(int w, int h);
