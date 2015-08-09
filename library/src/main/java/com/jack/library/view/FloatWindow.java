@@ -1,4 +1,4 @@
-package com.jack.view;
+package com.jack.library.view;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
@@ -8,7 +8,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
-import com.jack.Debug;
+import com.jack.library.Debug;
+
 
 /**
  * Created by jacktseng on 2015/6/19.

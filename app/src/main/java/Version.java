@@ -7,8 +7,8 @@ public class Version {
     /**
      *  version of software
      */
-    public static String BUILD_DATE = "";
-    public static int VERSION_01 = 1;
+    public static String BUILD_DATE = "150723";
+    public static int VERSION_01 = 2;
     public static int VERSION_02 = 0;
     public static int VERSION_03 = 0;
     public static int VERSION_04 = 0;

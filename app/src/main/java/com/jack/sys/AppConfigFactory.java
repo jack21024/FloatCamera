@@ -1,29 +1,30 @@
-package com.jack.util;
+package com.jack.sys;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.jack.Debug;
-import com.jack.view.CameraView;
+import com.jack.library.view.CameraView;
 
 /**
  * Created by jacktseng on 2015/6/24.
  */
-public class SettingManager {
+public class AppConfigFactory {
 
-    private static Setting INSTANCE;
+    private static AppConfig INSTANCE;
 
-    public static Setting getInstance(Context ctx) {
+    public static AppConfig getInstance(Context ctx) {
         if(INSTANCE == null)
-            INSTANCE = SPSettingBuilder.create(ctx);
-
+            INSTANCE = AppConfigBuilder.create(ctx);
         return INSTANCE;
     }
 
-    private static class SPSettingBuilder {
+    private static class AppConfigBuilder {
+        public static final String TAG = AppConfig.class.getSimpleName();
 
-        public static final String TAG = "SPSetting";
-
+        /**
+         * Lists of field for app config accessing
+         */
         private static String SETTING_SHARED_NAME = "SETTING";
         private static String SETTING_FIELD_PREVIEW_WIDTH   = "PREVIEW_WIDTH";
         private static String SETTING_FIELD_PREVIEW_HEIGHT  = "PREVIEW_HEIGHT";
@@ -31,9 +32,9 @@ public class SettingManager {
         private static String SETTING_FIELD_SNAPSHOT_HEIGHT = "SNAPSHOT_HEIGHT";
 
 
-        public static Setting create(final Context ctx) {
+        public static AppConfig create(final Context ctx) {
 
-            return new Setting() {
+            return new AppConfig() {
 
                 private SharedPreferences mShared;
 

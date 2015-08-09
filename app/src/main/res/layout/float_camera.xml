@@ -53,7 +53,7 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                class="com.jack.view.CameraView"
+                class="com.jack.library.view.CameraView"
                 android:id="@+id/main_cv_cameraView" />
 
             <WebView

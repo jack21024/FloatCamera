@@ -1,9 +1,9 @@
-package com.jack.util;
+package com.jack.sys;
 
 /**
  * Created by jacktseng on 2015/6/24.
  */
-public interface Setting {
+public interface AppConfig {
 
     public void setPreviewWidth(int w);
 
