@@ -7,10 +7,15 @@ import com.jack.Debug;
 import com.jack.library.view.CameraView;
 
 /**
- * Created by jacktseng on 2015/6/24.
+ * This factory is used to create a instance of AppConfig.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class AppConfigFactory {
 
+    /**
+     * A singleton instance of AppConfig
+     */
     private static AppConfig INSTANCE;
 
     public static AppConfig getInstance(Context ctx) {
@@ -19,6 +24,9 @@ public class AppConfigFactory {
         return INSTANCE;
     }
 
+    /**
+     * AppConfigBuilder implements AppConfig which is based on SharedPreferences.
+     */
     private static class AppConfigBuilder {
         public static final String TAG = AppConfig.class.getSimpleName();
 

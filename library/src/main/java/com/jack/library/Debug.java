@@ -3,7 +3,7 @@ package com.jack.library;
 import android.util.Log;
 
 /**
- * Created by jacktseng on 2015/8/7.
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class Debug {
     public static boolean IS_DEBUG = true;
@@ -12,6 +12,5 @@ public class Debug {
         if(IS_DEBUG)
             Log.d(tag, msg);
     }
-
 
 }

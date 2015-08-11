@@ -1,7 +1,9 @@
 package com.jack.sys;
 
 /**
- * Created by jacktseng on 2015/6/24.
+ * AppConfig is in charge of to store the app config.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public interface AppConfig {
 
@@ -21,6 +23,9 @@ public interface AppConfig {
 
     public int getSnapshotHeight();
 
+    /**
+     * Commits settings to update
+     */
     public void commit();
 
 }

@@ -13,19 +13,27 @@ import com.jack.library.camera.CameraManager;
 import com.jack.library.camera.impl.CameraManagerFactory;
 
 /**
- * Created by jacktseng on 2015/6/19.
+ * CameraView is a widget used to display camera preview by CameraHolder. The CameraHolder instance
+ * is taken from CameraManager at it's initialization.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     public static final String TAG = CameraView.class.getSimpleName();
 
-    public static final int CAMERA_ORIENTATION_PORT = 0;
-    public static final int CAMERA_ORIENTATION_LAND = 90;
+    //Lists the sizes of default
     public static final int CAMERA_PREVIEW_WIDTH_DEFAULT    = 320;
     public static final int CAMERA_PREVIEW_HEIGHT_DEFAULT   = 240;
     public static final int CAMERA_SNAPSHOT_WIDTH_DEFAULT   = 1920;
     public static final int CAMERA_SNAPSHOT_HEIGHT_DEFAULT  = 1080;
 
+    /**
+     * A flag indicates the SurfaceView object is ready
+     */
     private boolean mIsSurfacePrepared = false;
+    /**
+     * A flag indicates the camera preview is displaying
+     */
     private boolean mIsDisplaying = false;
 
     private SurfaceHolder mSurfaceHolder;
@@ -34,6 +42,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     private CameraHolder mCameraHolder;
 
+    /**
+     * This thread is used to start the camera preview
+     */
     private Thread mStartPreviewThread;
 
     private OnViewChangeListener mOnViewChangeListener;
@@ -58,6 +69,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mSurfaceHolder.addCallback(this);
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mCameraManager = CameraManagerFactory.getInstance();
+        /**
+         * Takes the CameraHolder instance
+         */
         mCameraHolder = mCameraManager.openCamera();
 
         if(mCameraHolder != null) {
@@ -75,22 +89,35 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
             }
 
             /**
-             * set default size of camera preview and snapshot
+             * Sets the default size of camera preview and snapshot
              */
             mCameraHolder.setPreviewSize(CAMERA_PREVIEW_WIDTH_DEFAULT, CAMERA_PREVIEW_HEIGHT_DEFAULT);
             mCameraHolder.setSnapshotSize(CAMERA_SNAPSHOT_WIDTH_DEFAULT, CAMERA_SNAPSHOT_HEIGHT_DEFAULT);
-
+            /**
+             * Sets camera preview orientation to portrait
+             */
             mCameraHolder.setOrientationPort();
+            /**
+             * Updates camera setting
+             */
             mCameraHolder.updateCameraParameters();
 
         }
 
     }
 
+    /**
+     * Sets the OnViewChangeListener instance to listen the SurfaceView was changed callback
+     *
+     * @param listener
+     */
     public void setOnViewChangeListener(OnViewChangeListener listener) {
         mOnViewChangeListener = listener;
     }
 
+    /**
+     * Starts the camera preview to display
+     */
     public void start() {
         if(mCameraHolder == null) return;
         if(mSurfaceHolder == null) return;
@@ -98,9 +125,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         if(mStartPreviewThread != null) return;
 
         /**
-         * This thread goals to launcher camera to preview after surface is prepared.
-         * Because main thread is using to create a view of Surface, so we need to
-         * create another thread to do that.
+         * This thread goals to launch the camera preview after surface was prepared. Because main
+         * thread is using to create a view of Surface, so we need to create another thread to do
+         * that.
          */
         mStartPreviewThread = new Thread() {
             @Override
@@ -108,7 +135,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
                 final long timeout = 5000;
                 final long startTime = System.currentTimeMillis();
 
-                //wait for surface to prepare
+                //waits for SurfaceView to prepare
                 while(!mIsSurfacePrepared) {
                     try {
                         Log.e(TAG, "wait for surface ready!");
@@ -117,7 +144,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
                         e.printStackTrace();
                     }
 
-                    //check timeout
+                    //checks timeout
                     long time = System.currentTimeMillis();
                     if(time - startTime > timeout)
                         break;
@@ -137,6 +164,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mStartPreviewThread.start();
     }
 
+    /**
+     * Stops the camera preview
+     */
     public void stop() {
         if(mCameraHolder == null) return;
         if(!mIsDisplaying) return;
@@ -150,6 +180,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
+    /**
+     * Ends the camera preview and closes the CameraHolder object
+     */
     public void release() {
         if(mCameraHolder != null)
             stop();
@@ -163,10 +196,18 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mIsSurfacePrepared = false;
     }
 
-    public CameraHolder getCameraController() {
+    /**
+     * Returns a CameraHolder object of this CameraView object
+     *
+     * @return
+     */
+    public CameraHolder getCameraHolder() {
         return mCameraHolder;
     }
 
+    /**
+     * Sets camera preview display to portrait orientation
+     */
     public void setCameraOrientationPort() {
         if(mCameraHolder == null) return;
         try {
@@ -178,6 +219,9 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Sets camera preview display to portrait orientation
+     */
     public void setCameraOrientationLand() {
         if(mCameraHolder == null) return;
         try {
@@ -189,6 +233,12 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Sets the dimensions for preview
+     *
+     * @param w
+     * @param h
+     */
     public void setCameraPreviewSize(int w, int h) {
         if(mCameraHolder == null) return;
 
@@ -196,6 +246,12 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mCameraHolder.updateCameraParameters();
     }
 
+    /**
+     * Sets the dimensions for snapshot
+     *
+     * @param w
+     * @param h
+     */
     public void setCameraSnapshotSize(int w, int h) {
         if(mCameraHolder == null) return;
 
@@ -203,10 +259,6 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         mCameraHolder.updateCameraParameters();
     }
 
-    /**
-     *
-     * implements for SurfaceHolder.Callback
-     */
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
         Debug.dumpLog(TAG, "surfaceCreated()");
@@ -232,7 +284,18 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
         release();
     }
 
+    /**
+     * This listener is used to listen the callback of CameraView was changed.
+     */
     public interface OnViewChangeListener {
+        /**
+         * Called when CameraView was changed (same as surfaceChanged of SurfaceViewHolder)
+         *
+         * @param view
+         * @param pixelFormat
+         * @param w
+         * @param h
+         */
         public void onViewChanged(CameraView view, int pixelFormat, int w, int h);
     }
 }

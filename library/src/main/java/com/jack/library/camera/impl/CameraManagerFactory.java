@@ -1,45 +1,40 @@
 package com.jack.library.camera.impl;
 
 import com.jack.library.camera.CameraHolder;
-import com.jack.library.camera.CameraHolderManager;
+import com.jack.library.camera.CameraHolderKeeper;
 import com.jack.library.camera.CameraManager;
 import com.jack.library.camera.CameraStorage;
 
 /**
- * Created by jacktseng on 2015/8/7.
+ * CameraManagerFactory is in charge of giving a CameraManager instance for camera support.
+ * <p/>
+ *  Author: Jack Tseng (jack21024@gmail.com)
  */
 public class CameraManagerFactory {
 
     public static final String TAG = CameraManagerFactory.class.getSimpleName();
 
-    private static CameraHolderManager CAMERA_HOLDER;
+    /**
+     * A singleton instance of CameraHolderKeeper
+     */
+    private static CameraHolderKeeper CAMERA_HOLDER;
 
     public static CameraManager getInstance() {
 
         return CameraManagerHolder.INSTANCE;
     }
 
+    /**
+     * This holder is used to create a CameraManager instance and keep it all the time
+     */
     private static class CameraManagerHolder {
 
         private static final CameraManager INSTANCE = new CameraManager() {
-
-            private CameraStorage mCameraStorage;
 
             @Override
             public CameraHolder getCameraHolder() {
                 return CAMERA_HOLDER;
             }
-
-//            @Override
-//            public void setCameraStorage(CameraStorage storage) {
-//                mCameraStorage = storage;
-//            }
-
-//            @Override
-//            public CameraStorage getCameraStorage() {
-//                return mCameraStorage;
-//            }
-
 
             @Override
             public CameraStorage getCameraStorage(CameraStorage.STORAGE_TYPE type) {
@@ -48,7 +43,7 @@ public class CameraManagerFactory {
                     case LOCAL_DEFAULT:
                         rtn = new CameraStorageImpl();
                         break;
-                    case REMOTE_DEFAULT: //not implements
+                    case REMOTE_DEFAULT: //not implemented
                         break;
                 }
 
@@ -71,28 +66,6 @@ public class CameraManagerFactory {
                     CAMERA_HOLDER = null;
                 }
             }
-
-//            @Override
-//            public void onSnapshot(int rawType, CameraRecord record) {
-//                if(rawType == ICameraCapture.CAMERA_SNAPSHOT_TYPE_JPEG) {
-//                    if(mCameraStorage != null) {
-//                        mCameraStorage.save(record);
-//
-//                    }
-//
-//                    String path = record.getResourcePath();
-//                    Debug.dumpLog(TAG, "save snapshot on " + path);
-//                }
-//
-//                /**
-//                 * release bitmap for clean memory
-//                 */
-//                Bitmap bmp = record.getImage();
-//                if(bmp != null) {
-//                    bmp.recycle();
-//                    System.gc();
-//                }
-//            }
         };
 
     }

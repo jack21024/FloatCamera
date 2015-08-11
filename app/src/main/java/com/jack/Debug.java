@@ -3,7 +3,7 @@ package com.jack;
 import android.util.Log;
 
 /**
- * Created by jacktseng on 2015/6/19.
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class Debug {
 
@@ -13,10 +13,4 @@ public class Debug {
         if(IS_DEBUG)
             Log.d(tag, msg);
     }
-
-    /**
-     * jack@150716
-     * 1. Added snapshot toast to show storage location
-     */
-
 }

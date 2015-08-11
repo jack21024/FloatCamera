@@ -23,7 +23,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Preview setting"
+                    android:text=" Preview setting"
                     android:id="@+id/setting_tv_previewTitle" />
 
                 <RadioGroup
@@ -46,7 +46,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:text="Snapshot setting"
+                    android:text=" Snapshot setting"
                     android:id="@+id/setting_tv_snapshotTitle" />
 
                 <RadioGroup
@@ -59,29 +59,30 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="end"
+                android:id="@+id/setting_ll_versionWrapper">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text=" "
+                    android:id="@+id/setting_tv_version" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="1.0.0.0"
+                    android:id="@+id/setting_tv_appVersion" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/setting_ll_versionWrapper">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Version:"
-            android:id="@+id/setting_tv_version" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="1.0.0.0"
-            android:id="@+id/setting_tv_versionLabel" />
-    </LinearLayout>
-
 
 </LinearLayout>

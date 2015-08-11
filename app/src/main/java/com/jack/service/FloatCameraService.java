@@ -25,15 +25,17 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jack.Debug;
 import com.jack.R;
+import com.jack.Version;
 import com.jack.library.camera.CameraHolder;
 import com.jack.library.camera.CameraRecord;
 import com.jack.library.camera.CameraStorage;
-import com.jack.library.camera.OnSnapshotListener;
 import com.jack.library.camera.impl.CameraManagerFactory;
+import com.jack.library.camera.listener.OnSnapshotListener;
 import com.jack.library.view.CameraView;
 import com.jack.library.view.FloatWindow;
 import com.jack.sys.AppConfig;
@@ -42,25 +44,34 @@ import com.jack.sys.AppConfigFactory;
 import java.util.List;
 
 /**
- * Created by jacktseng on 2015/6/19.
+ * Note: This application is not support api level 21 upper.
+ * <p/>
+ * This class is a real main function of this application.<br/>
+ * In order to use float window without any pages, we uses the service instead of the activity to
+ * create views dynamically.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class FloatCameraService extends Service {
     public static final String TAG = FloatCameraService.class.getSimpleName();
 
+    /**
+     * Action name for launching this service
+     */
     public static final String ACTION = "com.jack.float.camera";
 
     /**
-     * Codes of pages
+     * Code of pages
      */
-    public static final int PAGE_FLOAT_CAMERA   = 0x01;
-    public static final int PAGE_CAMERA_SETTING = 0x02;
+    private static final int PAGE_FLOAT_CAMERA   = 0x01;
+    private static final int PAGE_CAMERA_SETTING = 0x02;
 
-    public static final String WEB_URL_HOME = "http://www.google.com";
+    private static final String WEB_URL_HOME = "http://www.google.com";
 
     /** Application storage folder */
-    public static final String APP_FOLDER_NAME = "FCV2";
+    public static final String APP_FOLDER_NAME = "FCV";
 
-    /** Is a flag which enabling view to float or not  */
+    /** It's a flag which enabling view to float or not  */
     private boolean mIsFloatable = false;
 
     /** Indicates current page  */
@@ -74,7 +85,7 @@ public class FloatCameraService extends Service {
     /** The path where the record storing */
     private String mStorageRootPath;
 
-    /** Just a cache indicates current view */
+    /** Just a cache to indicate current view */
     private View mRootView;
 
     private FloatWindow mFloatView;
@@ -84,14 +95,12 @@ public class FloatCameraService extends Service {
     private Dialog mDialog;
 
     /**
-     * This listener is used to get snapshot which is a callback from CameraHolder,
-     * and saves the snapshot to external storage with CameraStorage which giving
-     * from CameraManager.
-     *
+     * This listener is used to get snapshot which is a callback from CameraHolder, and saves the
+     * snapshot to external storage with CameraStorage which giving from CameraManager.
      */
     private OnSnapshotListener mOnSnapshotListener = new OnSnapshotListener() {
         @Override
-        public void onSnapshot(int rawType, CameraRecord record) {
+        public void onSnapshot(int imageDataType, CameraRecord record) {
             do {
                 if(record == null) break;
                 if(mStorage == null) break;
@@ -100,7 +109,7 @@ public class FloatCameraService extends Service {
                 Toast.makeText(FloatCameraService.this,
                         "saved image at " + record.getResourcePath(), Toast.LENGTH_SHORT).show();
 
-                //Notify media scanner to update immediately
+                //Notifies media scanner to update immediately
                 MediaScannerConnection.scanFile(
                         getApplicationContext(),
                         new String[]{record.getResourcePath()},
@@ -130,6 +139,22 @@ public class FloatCameraService extends Service {
         switchPage(PAGE_FLOAT_CAMERA);
     }
 
+    private void release() {
+        if(mCameraView != null)
+            mCameraView.release();
+        if(mFloatView != null)
+            mFloatView.dismiss();
+        if(mDialog != null)
+            mDialog.dismiss();
+
+        mStorage = null;
+        mRootView = null;
+        mFloatView = null;
+        mCameraView = null;
+        mDialog = null;
+        mOnSnapshotListener = null;
+    }
+
     private void switchPage(int toPage) {
         Debug.dumpLog(TAG, "switch page from " + mOnPage + " to " + toPage);
 
@@ -139,12 +164,13 @@ public class FloatCameraService extends Service {
         switch(mOnPage) {
             case PAGE_FLOAT_CAMERA:
                 if(toPage == PAGE_CAMERA_SETTING) {
-                    if(mCameraView != null) {
-                        List<int[]> previewSizes = mCameraView.getCameraController().getSupportedPreviewSizes();
-                        List<int[]> snapshotSizes = mCameraView.getCameraController().getSupportedPictureSizes();
-                        mCameraView.release();
-                        loadCameraSettingPage(previewSizes, snapshotSizes);
-                    }
+                    if(mCameraView == null) return;
+                    if(mCameraView.getCameraHolder() == null) return;
+
+                    List<int[]> previewSizes = mCameraView.getCameraHolder().getSupportedPreviewSizes();
+                    List<int[]> snapshotSizes = mCameraView.getCameraHolder().getSupportedPictureSizes();
+                    mCameraView.release();
+                    loadCameraSettingPage(previewSizes, snapshotSizes);
                 }
 
                 break;
@@ -160,16 +186,17 @@ public class FloatCameraService extends Service {
     }
 
     /**
-     * Load the main page to display
+     * Loads the main page to display
      */
     private void loadFloatCameraPage() {
         View rootView = View.inflate(this, R.layout.float_camera, null);
         CameraView cameraView = (CameraView) rootView.findViewById(R.id.main_cv_cameraView);
 
         /**
-         * Set snapshot listener for catch snapshot picture
+         * Sets snapshot listener for catch snapshot picture
          */
-        cameraView.getCameraController().addSnapshotListener(mOnSnapshotListener);
+        if(cameraView.getCameraHolder() != null)
+            cameraView.getCameraHolder().addSnapshotListener(mOnSnapshotListener);
 
         /**
          * WebView is a mask which is used to hide the camera preview
@@ -188,7 +215,7 @@ public class FloatCameraService extends Service {
         wvMaskView.loadUrl(WEB_URL_HOME);
 
         /**
-         * Set seeker for alpha setting of the WebView
+         * Sets seeker for alpha setting of the WebView
          */
         SeekBar maskSeeker = (SeekBar) rootView.findViewById(R.id.main_sb_cvVisibleSeek);
         maskSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -232,7 +259,7 @@ public class FloatCameraService extends Service {
             lp = new FrameLayout.LayoutParams(lp.width, lp.height);
             wvMaskView.setLayoutParams(lp);
 
-            //Reset SeekBar for CameraView
+            //Resets SeekBar for CameraView
             int w = (int) (appConfig.getPreviewHeight());
             lp = new FrameLayout.LayoutParams(w, ViewGroup.LayoutParams.WRAP_CONTENT);
             lp.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
@@ -261,15 +288,15 @@ public class FloatCameraService extends Service {
             @Override
             public void onClick(View view) {
                 /**
-                 * If mIsFloatable is true and let FloatWindow can be move by touch, otherwise if
+                 * If mIsFloatable is true, enables FloatWindow to be moved by touch, otherwise if
                  * mIsFloatable is false, the WebView will handle touch event
                  *
                  */
                 if(mIsFloatable) {
-                    //Let soft keyboard can show, need to set WebView focus
+                    //Lets soft keyboard can show, need to set WebView focus
                     wvMaskView.setFocusable(true);
                     wvMaskView.requestFocus();
-                    //Reset OnTouchListener to default to origin touch behavior
+                    //Resets OnTouchListener to default to origin touch behavior
                     wvMaskView.setOnTouchListener(null);
                 }
                 else {
@@ -310,29 +337,27 @@ public class FloatCameraService extends Service {
         rootView.findViewById(R.id.main_btn_snapshot).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CameraHolder ch = mCameraView.getCameraController();
+                CameraHolder ch = mCameraView.getCameraHolder();
                 if(ch != null)
                     ch.snapshot();
 
                 Toast.makeText(FloatCameraService.this, "Snapshot!", Toast.LENGTH_SHORT).show();
-
-
             }
         });
 
         /**
-         * Start the camera to preview
+         * Starts the camera to preview
          */
         cameraView.start();
 
         /**
-         * Create a float window which contain the given view to float popup on screen
+         * Creates a float window which contain the given view to float popup on screen
          */
         FloatWindow floatWindow = new FloatWindow(rootView);
         floatWindow.layout();
 
         /**
-         * Cache views
+         * Sets views caching
          */
         mRootView = rootView;
         mCameraView = cameraView;
@@ -341,7 +366,7 @@ public class FloatCameraService extends Service {
     }
 
     /**
-     * Load the setting page with given lists of preview size and snapshot size
+     * Loads the setting page with given lists of preview size and snapshot size
      *
      * @param preview
      * @param snapshot
@@ -354,39 +379,62 @@ public class FloatCameraService extends Service {
         final RadioGroup rgPreviewSizes = (RadioGroup) rootView.findViewById(R.id.setting_rg_previewSizes);
         final RadioGroup rgSnapshotSizes = (RadioGroup) rootView.findViewById(R.id.setting_rg_snapshotSizes);
 
+        /**
+         * Shows the version of this application
+         */
+        ((TextView) rootView.findViewById(R.id.setting_tv_appVersion)).setText(Version.getVersionWithoutDate());
+
         DisplayMetrics dm = new DisplayMetrics();
         ((WindowManager)getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getMetrics(dm);
 
+        /**
+         * Gets a config of app
+         */
         AppConfig appConfig = AppConfigFactory.getInstance(this);
+
+        /**
+         * Builds the group of camera preview setting
+         */
         for(int[] size : preview) {
             Debug.dumpLog(TAG, "preview: w=" + size[0] + " h=" + size[1]);
 
             /**
-             * Filter over size of screen
+             * Filters the size which is small than screen
              */
             if(size[0] >= dm.heightPixels)
                 continue;
 
+            /**
+             * Creates a radio button to show camera size
+             */
             RadioGroup.LayoutParams lp =
-                    new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
             RadioButton rb = new RadioButton(this);
             rb.setText(size[0] + "x" + size[1]);
             rb.setTag(size);
             rb.setLayoutParams(lp);
             rgPreviewSizes.addView(rb);
 
-
             /**
-             * Select using now
+             * Selects which one of setting is used now according to app config
              */
             int w = appConfig.getPreviewWidth();
             int h = appConfig.getPreviewHeight();
             if(w == size[0] && h == size[1])
                 rb.setChecked(true);
         }
+
+        /**
+         * Builds the group of camera snapshot setting
+         */
         for(int[] size : snapshot) {
+            /**
+             * Creates a radio button to show camera size
+             */
             RadioGroup.LayoutParams lp =
-                    new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
             RadioButton rb = new RadioButton(this);
             rb.setText(size[0] + "x" + size[1]);
             rb.setTag(size);
@@ -394,7 +442,7 @@ public class FloatCameraService extends Service {
             rgSnapshotSizes.addView(rb);
 
             /**
-             * Select using now
+             * Selects which one of setting is used now according to app config
              */
             int w = appConfig.getSnapshotWidth();
             int h = appConfig.getSnapshotHeight();
@@ -402,6 +450,9 @@ public class FloatCameraService extends Service {
                 rb.setChecked(true);
         }
 
+        /**
+         * Prepares to show the setting page on screen
+         */
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(rootView);
         builder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
@@ -412,9 +463,12 @@ public class FloatCameraService extends Service {
                 int[] previewSize = (int[]) rgPreviewSizes.findViewById(previewCheckId).getTag();
                 int[] snapshotSize = (int[]) rgSnapshotSizes.findViewById(snapshotCheckId).getTag();
 
-                Log.v(TAG, "preview: w=" + previewSize[0] + " h=" + previewSize[1]);
-                Log.v(TAG, "snapshot: w=" + snapshotSize[0] + " h=" + snapshotSize[1]);
+                Log.v(TAG, "save preview: w=" + previewSize[0] + " h=" + previewSize[1]);
+                Log.v(TAG, "save snapshot: w=" + snapshotSize[0] + " h=" + snapshotSize[1]);
 
+                /**
+                 * To save the camera setting
+                 */
                 AppConfig appConfig = AppConfigFactory.getInstance(FloatCameraService.this);
                 if(appConfig != null) {
                     appConfig.setPreviewWidth(previewSize[0]);
@@ -423,11 +477,13 @@ public class FloatCameraService extends Service {
                     appConfig.setSnapshotHeight(snapshotSize[1]);
                     appConfig.commit();
 
+                    /**
+                     * Changes page to the float camera page
+                     */
                     switchPage(PAGE_FLOAT_CAMERA);
                 }
             }
         });
-
         mDialog = builder.create();
         mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         mDialog.show();
@@ -436,11 +492,7 @@ public class FloatCameraService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        if(mFloatView != null)
-            mFloatView.dismiss();
-        if(mCameraView != null)
-            mCameraView.release();
+        release();
     }
 
     @Override

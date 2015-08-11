@@ -1,30 +1,36 @@
 package com.jack.library.camera.impl;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
-import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 
 import com.jack.library.Debug;
-import com.jack.library.camera.CameraHolderManager;
+import com.jack.library.camera.CameraHolderKeeper;
 import com.jack.library.camera.CameraRecord;
 import com.jack.library.camera.Cameras;
-import com.jack.library.camera.OnSnapshotListener;
+import com.jack.library.camera.listener.OnSnapshotListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class supports a Camera of Camera1 which under api 21
- *
- * Created by jacktseng on 2015/8/8.
+ * An instance of CameraHolderKeeper which supporting the camera object is a Camera1 instance for
+ * android api level 21 before.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
-class CameraHolderImpl implements CameraHolderManager {
+class CameraHolderImpl implements CameraHolderKeeper {
 
     public static final String TAG = CameraHolderImpl.class.getSimpleName();
+
+    private static final int CAMERA_ORIENTATION_PORT = 90;
+    private static final int CAMERA_ORIENTATION_LAND = 0;
+
+    /**
+     * The preview status which is used to camera parameters updating
+     */
+    private boolean mIsCameraStated = false;
 
     private Camera1 mCamera;
 
@@ -37,39 +43,35 @@ class CameraHolderImpl implements CameraHolderManager {
             Debug.dumpLog(TAG, "take snapshot!");
 
             /**
-             * goals to avoid OOM problem
+             * Starts camera to preview again cause preview was stopped by taking snapshot
              */
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inDither = false;
-            options.inPurgeable = true;
-            options.inInputShareable = true;
+            camera.startPreview();
 
-            Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
-            Matrix mx = new Matrix();
-            mx.postRotate(90f);
-            Bitmap bmp2 = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), mx, true);
-
-            //release bmp
-            bmp.recycle();
-            System.gc();
             /**
-             * puts snapshot into CameraRecord object for encapsulation
+             * Puts snapshot into CameraRecord object for encapsulation
              */
-            CameraRecord<Bitmap> record = new CameraRecordImpl(bmp2, null);
+            CameraRecord record = new CameraRecordImpl(bytes, null);
 
+            //Fires the OnSnapshot event to all listeners
             if(mOnSnapshotListenerList.size() > 0)
                 for(OnSnapshotListener listener : mOnSnapshotListenerList) {
                     listener.onSnapshot(CAMERA_SNAPSHOT_TYPE_JPEG, record);
                 }
-
         }
     };
 
 
-        CameraHolderImpl(Camera1 camera) {
+    CameraHolderImpl(Camera1 camera) {
         mCamera = camera;
     }
 
+    /**
+     * Checks the size of preview is valid or not
+     *
+     * @param w
+     * @param h
+     * @return
+     */
     private boolean checkPreviewSize(int w, int h) {
         boolean isError = true;
 
@@ -96,6 +98,13 @@ class CameraHolderImpl implements CameraHolderManager {
         return  !isError;
     }
 
+    /**
+     * Checks the size of snapshot is valid or not
+     *
+     * @param w
+     * @param h
+     * @return
+     */
     private boolean checkSnapshotSize(int w, int h) {
         boolean isError = true;
 
@@ -148,6 +157,7 @@ class CameraHolderImpl implements CameraHolderManager {
         if(mOnSnapshotListenerList != null)
             mOnSnapshotListenerList.clear();
 
+        mIsCameraStated = false;
         mCamera = null;
         mOnSnapshotListenerList = null;
         mJPEGPictureCallback = null;
@@ -169,15 +179,27 @@ class CameraHolderImpl implements CameraHolderManager {
     public void snapshot() {
         Camera camera = mCamera.getCamera();
         camera.takePicture(null, null, null, mJPEGPictureCallback);
-        camera.startPreview();
+        /**
+         * This code was moved to the OnSnapshotListener instance to make sure camera starting
+         * preview correctly
+         */
+//        camera.startPreview();
     }
 
+    /**
+     * Not implemented
+     *
+     * @param path
+     */
     @Deprecated
     @Override
-    public void startRecording() {
+    public void startRecording(String path) {
 
     }
 
+    /**
+     * Not implemented
+     */
     @Deprecated
     @Override
     public void stopRecording() {
@@ -286,39 +308,43 @@ class CameraHolderImpl implements CameraHolderManager {
 
     @Override
     public void updateCameraParameters() {
-//        Camera camera = mCamera.getCamera();
-//        if(camera != null) {
-//            camera.stopPreview();
-//            camera.setParameters(camera.getParameters());
-////            camera.startPreview();
-//        }
+        Camera camera = mCamera.getCamera();
+        if(camera != null) {
+            if(mIsCameraStated)
+                camera.stopPreview();
+            camera.setParameters(camera.getParameters());
+            if(mIsCameraStated)
+                camera.startPreview();
+        }
     }
 
     @Override
     public void start() throws Exception {
         Camera camera = mCamera.getCamera();
         if(camera != null) {
-//            camera.setParameters(camera.getParameters());
             camera.startPreview();
+            mIsCameraStated = true;
         }
     }
 
     @Override
     public void stop() throws Exception {
         Camera camera = mCamera.getCamera();
-        if(camera != null)
+        if(camera != null) {
             camera.stopPreview();
+            mIsCameraStated = false;
+        }
     }
 
     /**
      * An instance of CameraRecord for CameraHolderImpl of Camera1
      */
-    private class CameraRecordImpl implements CameraRecord<Bitmap> {
-        private Bitmap image;
+    private class CameraRecordImpl implements CameraRecord<byte[]> {
+        private byte[] image;
         private long time;
         private String path;
 
-        private CameraRecordImpl(Bitmap image, String path) {
+        private CameraRecordImpl(byte[] image, String path) {
             this.image = image;
             this.path = path;
             this.time = System.currentTimeMillis();
@@ -335,12 +361,12 @@ class CameraHolderImpl implements CameraHolderManager {
         }
 
         @Override
-        public void setRecord(Bitmap record) {
+        public void setRecord(byte[] record) {
 
         }
 
         @Override
-        public Bitmap getRecord() {
+        public byte[] getRecord() {
             return image;
         }
 

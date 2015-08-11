@@ -1,10 +1,9 @@
 package com.jack.library.util;
 
 /**
- * This class is a useful tool for params simple checking likes null point,
- * be 0 or empty value etc.
- *
- * Created by jacktseng on 2015/7/28.
+ * This class is a useful tool for params simple checking likes null point, be 0 or empty value etc.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class ParamChecker {
 

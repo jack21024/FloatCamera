@@ -5,12 +5,16 @@ import android.hardware.Camera;
 import com.jack.library.camera.Cameras;
 
 /**
- * Class1 is an instance of Cameras of library that supporting Camera of api 21 before
- *
- * Created by jacktseng on 2015/8/8.
+ * Camera1 is an instance of Cameras of library that supporting Camera of android api level 21
+ * before.
+ * <p/>
+ * Author: Jack Tseng (jack21024@gmail.com)
  */
 public class Camera1 implements Cameras<Camera> {
 
+    /**
+     * Deprecated on android api level 21
+     */
     private Camera mCamera;
 
     Camera1(Camera camera) {
