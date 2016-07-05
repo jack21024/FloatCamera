@@ -6,6 +6,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -13,6 +15,7 @@ import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +39,15 @@ import com.jack.library.camera.CameraRecord;
 import com.jack.library.camera.CameraStorage;
 import com.jack.library.camera.impl.CameraManagerFactory;
 import com.jack.library.camera.listener.OnSnapshotListener;
+import com.jack.library.util.DimenUtils;
 import com.jack.library.view.CameraView;
 import com.jack.library.view.FloatWindow;
 import com.jack.sys.AppConfig;
 import com.jack.sys.AppConfigFactory;
+import com.txusballesteros.bubbles.BubbleLayout;
+import com.txusballesteros.bubbles.BubblesManager;
+import com.txusballesteros.bubbles.HoverBubble;
+import com.txusballesteros.bubbles.OnInitializedCallback;
 
 import java.util.List;
 
@@ -136,7 +144,8 @@ public class FloatCameraService extends Service {
                 .getCameraStorage(CameraStorage.STORAGE_TYPE.LOCAL_DEFAULT);
         mStorage.setRoot(mStorageRootPath);
 
-        switchPage(PAGE_FLOAT_CAMERA);
+//        switchPage(PAGE_FLOAT_CAMERA);
+        initBubble();
     }
 
     private void release() {
@@ -153,6 +162,8 @@ public class FloatCameraService extends Service {
         mCameraView = null;
         mDialog = null;
         mOnSnapshotListener = null;
+
+        releaseBubble();
     }
 
     private void switchPage(int toPage) {
@@ -487,6 +498,65 @@ public class FloatCameraService extends Service {
         mDialog = builder.create();
         mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         mDialog.show();
+    }
+
+    private BubblesManager mBubbleManager;
+    private HoverBubble mBubble;
+    private void initBubble() {
+        mBubbleManager = new BubblesManager.Builder(this).setTrashLayout(R.layout.pb_bubble_trash)
+                .setInitializationCallback(new OnInitializedCallback() {
+                    @Override
+                    public void onInitialized() {
+
+                        mBubble = (HoverBubble) LayoutInflater.from(FloatCameraService.this).inflate(R.layout.pb_bubble_main, null);
+                        float hoverRadius = DimenUtils.dp2px(60); // 60dp
+                        int[] colors = {Color.parseColor("#FFFFFFFF"), Color.parseColor("#FFFFFFFF"), Color.parseColor("#00FFFFFF")};
+                        GradientDrawable hoverDrawable = new GradientDrawable(GradientDrawable.Orientation.TL_BR, colors);
+                        hoverDrawable.setShape(GradientDrawable.OVAL);
+                        hoverDrawable.setGradientType(GradientDrawable.RADIAL_GRADIENT);
+                        hoverDrawable.setGradientRadius(hoverRadius);
+                        mBubble.setHoverResource(hoverDrawable, (ViewGroup) mBubble.findViewById(R.id.pb_bubble_main_layout_wrapper));
+
+                        Log.e(TAG, "2");
+
+                        mBubble.setOnBubbleClickListener(new BubbleLayout.OnBubbleClickListener() {
+                            @Override
+                            public void onBubbleClick(BubbleLayout bubble) {
+                                toast("bubble click!");
+                            }
+                        });
+                        mBubble.setOnBubbleRemoveListener(new BubbleLayout.OnBubbleRemoveListener() {
+                            @Override
+                            public void onBubbleRemoved(BubbleLayout bubble) {
+                                toast("bubble removed");
+                            }
+
+                            @Override
+                            public void onBubbleRemovedWithActionFired(BubbleLayout bubble, int actionId) {
+                                toast("bubble remove with action fired");
+                            }
+                        });
+
+
+                        mBubbleManager.addBubble(mBubble, 60, 20);
+                        mBubble.addHoverListener();
+
+                    }
+                }).build();
+
+        if(mBubbleManager != null) {
+            mBubbleManager.initialize();
+        }
+    }
+
+    private void releaseBubble() {
+        if(mBubbleManager != null) {
+            mBubbleManager.recycle();
+        }
+    }
+
+    private void toast(String toast) {
+        Toast.makeText(FloatCameraService.this, toast, Toast.LENGTH_SHORT).show();
     }
 
     @Override

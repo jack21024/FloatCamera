@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/pb_bubble_trash_upper_bg"
+        android:layout_alignParentTop="true">
+
+        <!--<include layout="@layout/intl_private_browsing_cms_logo_layout"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentTop="true" />-->
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@drawable/pb_bubble_trash_lower_bg"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:baselineAligned="false"
+        >
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.3">-->
+            <!--<com.txusballesteros.bubbles.BubbleActionView-->
+                <!--android:background="@drawable/pb_bubble_setting_icon_bg"-->
+                <!--android:id="@+id/pb_bubble_trash_bav_remove"-->
+                <!--android:layout_width="56dp"-->
+                <!--android:layout_height="56dp"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_above="@+id/pb_bubble_trash_text_remove"-->
+                <!--android:layout_marginBottom="5dp">-->
+
+                <!--<ks.cm.antivirus.common.ui.IconFontTextView-->
+                    <!--android:id="@+id/pb_bubble_trash_iconftv_remove"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerInParent="true"-->
+                    <!--android:textColor="#FFFFFFFF"-->
+                    <!--android:textSize="32dp"-->
+                    <!--android:text="@string/iconfont_eye_off"-->
+                    <!--android:gravity="center" />-->
+
+            <!--</com.txusballesteros.bubbles.BubbleActionView>-->
+
+            <!--<ks.cm.antivirus.common.ui.TypefacedTextView-->
+                <!--android:id="@+id/pb_bubble_trash_text_remove"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="#CCFFFFFF"-->
+                <!--android:textSize="14dp"-->
+                <!--android:text="@string/applock_vault_select_btn"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_marginBottom="15dp"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_alignParentBottom="true"/>-->
+
+            <!--<com.txusballesteros.bubbles.BubbleActionView-->
+                <!--android:id="@+id/pb_bubble_trash_bav_privateBrowsing"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_marginBottom="18dp"-->
+                <!--android:visibility="gone" >-->
+
+                <!--<ImageView-->
+                    <!--android:id="@+id/pb_bubble_trash_iv_privateBrowsing"-->
+                    <!--android:layout_width="36dp"-->
+                    <!--android:layout_height="36dp"-->
+                    <!--android:gravity="center"-->
+                    <!--android:src="@drawable/pb_bubble_trash_dropzone"/>-->
+
+            <!--</com.txusballesteros.bubbles.BubbleActionView>-->
+        <!--</RelativeLayout>-->
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.4">-->
+            <!--<com.txusballesteros.bubbles.BubbleActionView-->
+                <!--android:background="@drawable/pb_bubble_private_icon_bg"-->
+                <!--android:id="@+id/pb_bubble_trash_bav_private"-->
+                <!--android:layout_width="56dp"-->
+                <!--android:layout_height="56dp"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_above="@+id/pb_bubble_trash_text_private"-->
+                <!--android:layout_marginBottom="5dp"-->
+                <!-->-->
+                <!--<FrameLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:id="@+id/pb_bubble_private"-->
+                    <!--android:layout_centerInParent="true">-->
+                    <!--<ks.cm.antivirus.common.ui.IconFontTextView-->
+                        <!--android:id="@+id/pb_bubble_trash_iconftv_private"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerInParent="true"-->
+                        <!--android:textColor="#FFFFFFFF"-->
+                        <!--android:textSize="35dp"-->
+                        <!--android:text="@string/iconfont_earth"-->
+                        <!--android:gravity="center"/>-->
+                    <!--<ks.cm.antivirus.common.ui.IconFontTextView-->
+                        <!--android:layout_height="16dp"-->
+                        <!--android:layout_width="16dp"-->
+                        <!--android:text="@string/iconfont_cmslogo"-->
+                        <!--android:textSize="11dp"-->
+                        <!--android:textColor="@color/gen_dulanblue"-->
+                        <!--android:background="@drawable/oval_white_normal"-->
+                        <!--android:gravity="center"-->
+                        <!--android:layout_gravity="bottom|right"-->
+                        <!--/>-->
+                <!--</FrameLayout>-->
+
+            <!--</com.txusballesteros.bubbles.BubbleActionView>-->
+
+            <!--<ks.cm.antivirus.common.ui.TypefacedTextView-->
+                <!--android:id="@+id/pb_bubble_trash_text_private"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="#CCFFFFFF"-->
+                <!--android:textSize="14dp"-->
+                <!--android:text="@string/pb_bubble_private_hint"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_marginBottom="15dp"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_alignParentBottom="true"/>-->
+
+        <!--</RelativeLayout>-->
+
+        <!--<RelativeLayout-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_weight="0.3">-->
+            <!--<com.txusballesteros.bubbles.BubbleActionView-->
+                <!--android:background="@drawable/pb_bubble_setting_icon_bg"-->
+                <!--android:id="@+id/pb_bubble_trash_bav_setting"-->
+                <!--android:layout_width="56dp"-->
+                <!--android:layout_height="56dp"-->
+                <!--android:layout_alignWithParentIfMissing="false"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_above="@+id/pb_bubble_trash_text_settings"-->
+                <!--android:layout_marginBottom="5dp">-->
+
+                <!--<ks.cm.antivirus.common.ui.IconFontTextView-->
+                    <!--android:id="@+id/pb_bubble_trash_iconftv_setting"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center"-->
+                    <!--android:textColor="#FFFFFFFF"-->
+                    <!--android:textSize="32dp"-->
+                    <!--android:text="@string/iconfont_uninstall"-->
+                    <!--android:layout_centerInParent="true" />-->
+
+            <!--</com.txusballesteros.bubbles.BubbleActionView>-->
+
+            <!--<ks.cm.antivirus.common.ui.TypefacedTextView-->
+                <!--android:id="@+id/pb_bubble_trash_text_settings"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="#CCFFFFFF"-->
+                <!--android:textSize="14dp"-->
+                <!--android:text="@string/intl_antitheft_dialog_btn_deactive"-->
+                <!--android:layout_alignParentLeft="false"-->
+                <!--android:layout_marginBottom="15dp"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--/>-->
+        <!--</RelativeLayout>-->
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3">
+
+            <com.txusballesteros.bubbles.BubbleActionView
+                android:background="@drawable/pb_bubble_setting_icon_bg"
+                android:id="@+id/pb_bubble_trash_bav_setting"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignWithParentIfMissing="false"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:id="@+id/pb_bubble_trash_iconftv_setting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="32dp"
+                    android:text="X"
+                    android:layout_centerInParent="true" />
+
+            </com.txusballesteros.bubbles.BubbleActionView>
+
+            <!--<ks.cm.antivirus.common.ui.TypefacedTextView-->
+                <!--android:id="@+id/pb_bubble_trash_text_settings"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="#CCFFFFFF"-->
+                <!--android:textSize="14dp"-->
+                <!--android:text="@string/intl_antitheft_dialog_btn_deactive"-->
+                <!--android:layout_alignParentLeft="false"-->
+                <!--android:layout_marginBottom="15dp"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_alignParentBottom="true"-->
+                />
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>
